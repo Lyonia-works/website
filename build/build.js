@@ -171,12 +171,12 @@ async function homePage(ctx, page) {
     <div class="stage">
       <picture>
         <source media="(max-width: 760px)" srcset="${phone}"${ctx.dims(phone)}>
-        <img class="figure" src="${character}"${ctx.dims(character)} alt="${esc(text(page, "character_image_alt"))}">
+        <img class="figure" src="${character}"${ctx.dims(character)} fetchpriority="high" alt="${esc(text(page, "character_image_alt"))}">
       </picture>
     </div>
     <div class="intro">
-      <div class="seal"><img src="${ctx.emblem}" alt=""${ctx.dims(ctx.emblem)}><p class="eyebrow" id="live">${esc(text(ctx.site, "live_badge_default"))}</p></div>
-      <h1><img src="${ctx.wordmark}" alt="${esc(ctx.name)}"${ctx.dims(ctx.wordmark)}></h1>
+      <div class="seal"><img src="${ctx.emblem}" alt=""${ctx.dims(ctx.emblem)} fetchpriority="high"><p class="eyebrow" id="live">${esc(text(ctx.site, "live_badge_default"))}</p></div>
+      <h1><img src="${ctx.wordmark}" alt="${esc(ctx.name)}"${ctx.dims(ctx.wordmark)} fetchpriority="high"></h1>
       <p class="lede">${inline(page.body)}</p>
       <div class="actions">
         <a class="cta" id="watch" href="${esc(ctx.twitchUrl)}" target="_blank" rel="noopener">${icon(ctx, page, "twitch")}<span class="live-dot" aria-hidden="true"></span><span>${esc(text(ctx.site, "watch_button_default"))}</span></a>

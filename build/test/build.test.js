@@ -25,7 +25,7 @@ async function edit(dir, file, from, to) {
 
 test("reads image sizes from WebP and PNG headers", async () => {
   const size = async (p) => imageSize(await readFile(join(ROOT, p)));
-  assert.deepEqual(await size("content/images/emblem.webp"), { width: 886, height: 900 });
+  assert.deepEqual(await size("content/images/emblem.webp"), { width: 284, height: 288 });
   assert.deepEqual(await size("content/images/chibi.webp"), { width: 533, height: 964 });
   assert.deepEqual(await size("content/images/preview.png"), { width: 1200, height: 630 });
   assert.deepEqual(await size("assets/icon-192.png"), { width: 192, height: 192 });
@@ -47,7 +47,7 @@ test("images get their real size so the layout does not jump", async () => {
   const { content, out } = await scratch();
   await buildSite({ contentDir: content, outDir: out });
   const html = await readFile(join(out, "index.html"), "utf8");
-  assert.match(html, /<img src="images\/emblem\.webp" alt="" width="886" height="900">/);
+  assert.match(html, /<img src="images\/emblem\.webp" alt="" width="284" height="288">/);
 });
 
 test("an empty photo shows the placeholder", async () => {

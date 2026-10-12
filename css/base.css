@@ -74,7 +74,7 @@ body {
   font: 400 1.0625rem/1.6 var(--sans);
   padding-inline: 20px;
 }
-img { max-width: 100%; display: block; }
+img { max-width: 100%; display: block; color: transparent; }
 a { color: inherit; }
 .wrap { max-width: 1040px; margin-inline: auto; }
 
