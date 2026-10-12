@@ -61,7 +61,8 @@ function remember(token) {
 const isOn = () => canPush && Boolean(stored()) && Notification.permission === "granted";
 
 function render() {
-  button.querySelector("span").textContent = isOn() ? "Notifications on" : "Notify me";
+  const { notifyOn, notifyOff } = window.LIVE_LABELS;
+  button.querySelector("span").textContent = isOn() ? notifyOn : notifyOff;
   button.setAttribute("aria-pressed", String(isOn()));
 }
 
