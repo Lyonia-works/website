@@ -11,29 +11,26 @@ const CONFIG = {
 const VAPID_KEY = "BB7jL6D-6EPnauw5f-n7IxsJXYyx-p-e1zlzGLQz2V-fyoZST6uLh0mzDAsuNMpRU0lPzkW1pwrxKf-tJpuXHAQ";
 const STORE = "lyonia-push-token";
 
-const badge = document.getElementById("live");
-const watch = document.getElementById("watch");
 const button = document.getElementById("notify");
 
 // ---------- live badge ----------
+
+// Show the static labels if the live state hasn't arrived in time.
+setTimeout(() => document.documentElement.classList.remove("live-pending"), 2000);
 
 async function refresh() {
   try {
     const res = await fetch(`${API}/status`);
     if (!res.ok) return;
-    const { live, game } = await res.json();
-    const text = live
-      ? (game ? `Live now · ${game}` : "Live now")
-      : (game ? `Offline · last streamed ${game}` : "Offline");
-    const dot = document.createElement("span");
-    dot.className = "dot";
-    dot.setAttribute("aria-hidden", "true");
-    badge.replaceChildren(dot, document.createTextNode(text));
-    badge.classList.toggle("is-live", live);
-    watch.classList.toggle("is-live", live);
-    watch.lastElementChild.textContent = live ? "Watch live now" : "Follow on Twitch";
+    const state = await res.json();
+    window.paintLive(state);
+    try {
+      localStorage.setItem("lyonia-live", JSON.stringify({ live: state.live, game: state.game }));
+    } catch {
+      // Not saved: the next visit waits for the network instead.
+    }
   } catch {
-    // Keep the static "Live on Twitch" label.
+    // Keep the static labels.
   }
 }
 

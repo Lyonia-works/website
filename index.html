@@ -11,6 +11,23 @@
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/home.css">
+<script>
+  // Paint the last known live state in the first frame; js/live.js keeps it fresh.
+  document.documentElement.classList.add("live-pending");
+  function paintLive(s) {
+    const badge = document.getElementById("live"), watch = document.getElementById("watch");
+    const text = s.live ? (s.game ? "Live now · " + s.game : "Live now")
+                        : (s.game ? "Offline · last streamed " + s.game : "Offline");
+    const dot = document.createElement("span");
+    dot.className = "dot";
+    dot.setAttribute("aria-hidden", "true");
+    badge.replaceChildren(dot, document.createTextNode(text));
+    badge.classList.toggle("is-live", s.live);
+    watch.classList.toggle("is-live", s.live);
+    watch.lastElementChild.textContent = s.live ? "Watch live now" : "Follow on Twitch";
+    document.documentElement.classList.remove("live-pending");
+  }
+</script>
 </head>
 <body class="character-seal">
 <div class="wrap">
@@ -29,6 +46,7 @@
         <a class="cta" id="watch" href="https://www.twitch.tv/lyonia" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg><span class="live-dot" aria-hidden="true"></span><span>Watch on Twitch</span></a>
         <button class="ghost" id="notify" type="button" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a5 5 0 0 0-5 5v4l-2 3h14l-2-3V8a5 5 0 0 0-5-5z"/><path d="M10 18a2 2 0 0 0 4 0"/></svg><span>Notify me</span></button>
       </div>
+      <script>try { const s = JSON.parse(localStorage.getItem("lyonia-live")); if (s) paintLive(s); } catch {}</script>
     </div>
   </header>
   <section class="links" aria-labelledby="find">

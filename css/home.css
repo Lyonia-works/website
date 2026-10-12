@@ -43,3 +43,4 @@
 .cta.is-live .live-dot { display: inline-block; animation: pulse 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .cta.is-live .live-dot { animation: none; } }
 .actions .cta { min-width: 12.75rem; justify-content: center; }
+.live-pending #live, .live-pending #watch > span:last-child { visibility: hidden; }
