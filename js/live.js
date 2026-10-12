@@ -12,6 +12,7 @@ const VAPID_KEY = "BB7jL6D-6EPnauw5f-n7IxsJXYyx-p-e1zlzGLQz2V-fyoZST6uLh0mzDAsuN
 const STORE = "lyonia-push-token";
 
 const badge = document.getElementById("live");
+const watch = document.getElementById("watch");
 const button = document.getElementById("notify");
 
 // ---------- live badge ----------
@@ -29,6 +30,8 @@ async function refresh() {
     dot.setAttribute("aria-hidden", "true");
     badge.replaceChildren(dot, document.createTextNode(text));
     badge.classList.toggle("is-live", live);
+    watch.classList.toggle("is-live", live);
+    watch.lastElementChild.textContent = live ? "Watch live now" : "Follow on Twitch";
   } catch {
     // Keep the static "Live on Twitch" label.
   }
