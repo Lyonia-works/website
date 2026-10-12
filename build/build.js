@@ -103,6 +103,34 @@ ${size ? `<meta property="og:image:width" content="${size[1]}">\n<meta property=
 <link rel="icon" href="${ctx.emblem}">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/${css}.css">
+<script>
+  // Show the page once its font is ready, so no text ever reflows. Images still downloading then fade in.
+  (() => {
+    const html = document.documentElement;
+    html.classList.add("font-wait");
+    if ("serviceWorker" in navigator && "PushManager" in window && "Notification" in window) html.classList.add("can-push");
+    let shown = false;
+    const show = () => {
+      if (shown) return;
+      shown = true;
+      const shownAt = performance.now();
+      for (const img of document.images) {
+        if (img.complete) continue;
+        img.classList.add("img-wait");
+        const done = () => {
+          if (performance.now() - shownAt < 150) img.classList.add("no-fade"); // arrived almost at once: just show it
+          img.classList.remove("img-wait");
+        };
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      }
+      html.classList.remove("font-wait");
+    };
+    const whenParsed = () => (document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", show) : show());
+    document.fonts.load('1em "Figtree"').then(whenParsed, whenParsed);
+    setTimeout(show, 1000);
+  })();
+</script>
 ${extra}</head>`;
 }
 
@@ -180,9 +208,18 @@ async function homePage(ctx, page) {
       <p class="lede">${inline(page.body)}</p>
       <div class="actions">
         <a class="cta" id="watch" href="${esc(ctx.twitchUrl)}" target="_blank" rel="noopener">${icon(ctx, page, "twitch")}<span class="live-dot" aria-hidden="true"></span><span>${esc(text(ctx.site, "watch_button_default"))}</span></a>
-        <button class="ghost" id="notify" type="button" aria-pressed="false" hidden>${BELL}<span>${esc(labels.notifyOff)}</span></button>
+        <button class="ghost" id="notify" type="button" aria-pressed="false">${BELL}<span>${esc(labels.notifyOff)}</span></button>
       </div>
-      <script>try { const s = JSON.parse(localStorage.getItem("lyonia-live")); if (s) paintLive(s); } catch {}</script>
+      <script>
+        try { const s = JSON.parse(localStorage.getItem("lyonia-live")); if (s) paintLive(s); } catch {}
+        try {
+          if (localStorage.getItem("lyonia-push-token") && Notification.permission === "granted") {
+            const b = document.getElementById("notify");
+            b.lastElementChild.textContent = window.LIVE_LABELS.notifyOn;
+            b.setAttribute("aria-pressed", "true");
+          }
+        } catch {}
+      </script>
     </div>
   </header>
   <section class="links" aria-labelledby="find">

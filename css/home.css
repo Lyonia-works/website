@@ -44,3 +44,10 @@
 @media (prefers-reduced-motion: reduce) { .cta.is-live .live-dot { animation: none; } }
 .actions .cta { min-width: 12.75rem; justify-content: center; }
 .live-pending #live, .live-pending #watch > span:last-child { visibility: hidden; }
+
+/* Notify button: only where web push works, decided before the first paint */
+#notify { display: none; }
+.can-push #notify { display: inline-flex; }
+/* Live label: at most two lines, and on phones always two lines tall, so its text can change without moving anything */
+.seal .eyebrow { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+@media (max-width: 760px) { .seal .eyebrow { min-height: 2lh; } }

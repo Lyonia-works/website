@@ -105,7 +105,6 @@ async function turnOff() {
 
 // Shown only where web push works (on iPhone: once the site is added to the Home Screen).
 if (canPush) {
-  button.hidden = false;
   render();
   button.addEventListener("click", async () => {
     button.disabled = true;

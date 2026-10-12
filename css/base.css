@@ -185,3 +185,9 @@ footer .foot:hover { text-decoration: underline; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- load without movement ---------- */
+html.font-wait body { visibility: hidden; }
+img { transition: opacity .2s ease; }
+img.img-wait { opacity: 0; }
+img.no-fade { transition: none; }
