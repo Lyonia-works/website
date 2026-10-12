@@ -14,3 +14,24 @@
   .stage .figure { position: relative; inset: auto; height: auto; width: 90%; margin: 8% auto 0; display: block; }
   .seal { justify-content: center; }
 }
+
+/* Watch + notify buttons, live badge */
+:root { --live: #e5484d; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.ghost { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border: 1px solid var(--line); border-radius: 999px;
+  background: transparent; color: var(--ink); font: 600 1rem/1 var(--sans); cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.ghost svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.ghost:hover { border-color: var(--lilac); background: var(--mist); }
+.ghost[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.ghost:disabled { opacity: .6; cursor: progress; }
+.ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.hint { margin: 12px 0 0; max-width: 32em; font-size: .9375rem; color: var(--muted); }
+.eyebrow .dot { display: inline-block; width: 8px; height: 8px; margin-right: 8px; border: 1.5px solid currentColor; border-radius: 50%; vertical-align: 1px; }
+.eyebrow.is-live .dot { background: var(--live); border-color: var(--live); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .eyebrow.is-live .dot { animation: none; } }
+@media (max-width: 760px) {
+  .actions { flex-direction: column; align-items: stretch; }
+  .ghost { justify-content: center; }
+  .hint { margin-inline: auto; }
+}

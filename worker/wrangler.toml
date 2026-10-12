@@ -1,0 +1,24 @@
+name = "live"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+preview_urls = false
+
+# Secrets (set with `wrangler secret put`): TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, EVENTSUB_SECRET, FIREBASE_SA
+[vars]
+ALLOWED_ORIGIN = "https://lyonia-works.github.io"
+SITE_URL = "https://lyonia-works.github.io/website"
+TWITCH_URL = "https://www.twitch.tv/lyonia"
+TWITCH_USER_ID = "69874547"
+FIREBASE_PROJECT = "lyonia-website"
+FCM_TOPIC = "lyonia-live"
+
+[[kv_namespaces]]
+binding = "LIVE"
+id = "ad629f3fbc11432887cf2f7a8cf7aea7"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[observability]
+enabled = true
