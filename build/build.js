@@ -1,7 +1,8 @@
 // Build the site from content/ into dist/: one HTML page per content file, plus the static files.
 
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { marked } from "marked";
@@ -12,6 +13,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const STATIC = ["css", "js", "assets", "firebase-messaging-sw.js", "manifest.webmanifest"];
 const ICONS = join(ROOT, "build", "icons");
 
+// Style and script links carry a fingerprint of the file, so a new version never mixes with an old cached file.
+const versioned = (path) => `${path}?v=${createHash("sha256").update(readFileSync(join(ROOT, path))).digest("hex").slice(0, 10)}`;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const inline = (s) => marked.parseInline(s);
 const ARROW = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
@@ -101,8 +104,8 @@ async function head(ctx, page, { path, css, theme, extra = "" }) {
 ${size ? `<meta property="og:image:width" content="${size[1]}">\n<meta property="og:image:height" content="${size[2]}">\n` : ""}<meta property="og:image:alt" content="${esc(previewAlt)}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${ctx.emblem}">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/${css}.css">
+<link rel="stylesheet" href="${versioned("css/base.css")}">
+<link rel="stylesheet" href="${versioned(`css/${css}.css`)}">
 <script>
   // Show the page once its font is ready, so no text ever reflows. Images still downloading then fade in.
   (() => {
@@ -248,7 +251,7 @@ ${links.join("\n")}
 
 ${footer(ctx, "index.html")}
 </div>
-<script type="module" src="js/live.js"></script>
+<script type="module" src="${versioned("js/live.js")}"></script>
 </body>
 </html>
 `;

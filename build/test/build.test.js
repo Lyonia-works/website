@@ -85,3 +85,12 @@ test("text from content is escaped in the HTML", async () => {
   const html = await readFile(join(out, "index.html"), "utf8");
   assert.ok(html.includes("&lt;b&gt;@LyoniaFPS&lt;/b&gt;"));
 });
+
+test("style and script links carry a content fingerprint", async () => {
+  const { content, out } = await scratch();
+  await buildSite({ contentDir: content, outDir: out });
+  const html = await readFile(join(out, "index.html"), "utf8");
+  assert.match(html, /<link rel="stylesheet" href="css\/base\.css\?v=[0-9a-f]{10}">/);
+  assert.match(html, /<link rel="stylesheet" href="css\/home\.css\?v=[0-9a-f]{10}">/);
+  assert.match(html, /<script type="module" src="js\/live\.js\?v=[0-9a-f]{10}"><\/script>/);
+});
