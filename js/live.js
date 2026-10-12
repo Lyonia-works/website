@@ -13,7 +13,6 @@ const STORE = "lyonia-push-token";
 
 const badge = document.getElementById("live");
 const button = document.getElementById("notify");
-const hint = document.getElementById("notify-hint");
 
 // ---------- live badge ----------
 
@@ -41,7 +40,6 @@ setInterval(refresh, 60_000);
 // ---------- notifications ----------
 
 const canPush = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
 function stored() {
   try {
@@ -67,11 +65,6 @@ function render() {
   button.setAttribute("aria-pressed", String(isOn()));
 }
 
-function say(text) {
-  hint.textContent = text;
-  hint.hidden = false;
-}
-
 let firebase;
 function messaging() {
   firebase ??= (async () => {
@@ -95,15 +88,11 @@ async function post(path, token) {
 }
 
 async function turnOn() {
-  if ((await Notification.requestPermission()) !== "granted") {
-    say("Notifications are blocked for this site. You can allow them in your browser's site settings.");
-    return;
-  }
+  if ((await Notification.requestPermission()) !== "granted") return;
   const { fcm, instance, registration } = await messaging();
   const token = await fcm.getToken(instance, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
   await post("subscribe", token);
   remember(token);
-  say("Done. You'll get a notification when Lyonia goes live.");
 }
 
 async function turnOff() {
@@ -111,23 +100,18 @@ async function turnOff() {
   const { fcm, instance } = await messaging();
   await fcm.deleteToken(instance).catch(() => {});
   remember(null);
-  say("Notifications are off.");
 }
 
-if (canPush || isIOS) {
+// Shown only where web push works (on iPhone: once the site is added to the Home Screen).
+if (canPush) {
   button.hidden = false;
   render();
   button.addEventListener("click", async () => {
-    if (!canPush) {
-      say("On iPhone and iPad: tap Share, then Add to Home Screen, and open Lyonia from your Home Screen to turn on notifications.");
-      return;
-    }
     button.disabled = true;
     try {
       await (isOn() ? turnOff() : turnOn());
     } catch (err) {
       console.error(err);
-      say("Something went wrong. Please try again.");
     } finally {
       button.disabled = false;
       render();
