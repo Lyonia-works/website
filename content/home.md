@@ -8,9 +8,8 @@ title: "Lyonia"
 preview_title: "Lyonia"
 preview_description: "Lyonia streams on Twitch. Links to every channel."
 
-# Character art: the full-body image on computers, the portrait on phones
+# Character art: full body on computers; phones show the head and shoulders in a circle
 character_image: "images/chibi.webp"
-character_image_phone: "images/portrait.webp"
 character_image_alt: "Lyonia's chibi avatar: dark hair with violet streaks, wolf ears and heart-shaped violet eyes, in a white and gold coat"
 
 links_heading: "Find me"

@@ -152,6 +152,25 @@ function topBar(ctx) {
   </nav>`;
 }
 
+// Night-sky background: drifting glows and twinkling sparkles. Positions are fixed (seeded), so every build is the same.
+function sky() {
+  let seed = 7;
+  const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  // Sparkles stay in the side margins, clear of all text: "edge" ones in the outer 3% (also shown on phones),
+  // "side" ones from 3% to 8% (desktop only, where the content column leaves wider margins).
+  const spark = (extra, i) => {
+    const edge = i % 2 === 0;
+    const band = edge ? 0.5 + rand() * 2.5 : 3 + rand() * 5;
+    const x = rand() < 0.5 ? band : 100 - band;
+    const y = rand() * 92 + 4;
+    const style = `--x:${x.toFixed(1)}%;--y:${y.toFixed(1)}%;--s:${(1 + rand() * 0.4).toFixed(2)};--d:${(3 + rand() * 4).toFixed(1)}s;--delay:-${(rand() * 7).toFixed(1)}s`;
+    // "low" sparkles (lower half) are hidden on phones, where the buttons and links reach the screen edges.
+    return `<span class="spark ${edge ? "edge" : "side"}${y > 50 ? " low" : ""}${extra ? " extra" : ""}" style="${style}"></span>`;
+  };
+  const sparks = [...Array(18)].map((_, i) => spark(false, i)).concat([...Array(8)].map((_, i) => spark(true, i)));
+  return `<div class="sky" aria-hidden="true"><span class="glow a"></span><span class="glow b"></span><span class="glow c"></span><span class="glow d"></span>${sparks.join("")}</div>`;
+}
+
 async function homePage(ctx, page) {
   const s = ctx.site;
   const labels = {
@@ -177,6 +196,7 @@ async function homePage(ctx, page) {
     badge.replaceChildren(dot, document.createTextNode(text));
     badge.classList.toggle("is-live", s.live);
     watch.classList.toggle("is-live", s.live);
+    document.documentElement.classList.toggle("is-live", s.live);
     watch.lastElementChild.textContent = s.live ? L.watchLive : L.watchOffline;
     document.documentElement.classList.remove("live-pending");
   }
@@ -185,7 +205,6 @@ async function homePage(ctx, page) {
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 `;
   const character = await ctx.image(page, "character_image");
-  const phone = await ctx.image(page, "character_image_phone");
   const links = list(page, "links", ["name", "handle", "url", "icon"]).map((l) => {
     if (!/^https?:\/\//.test(l.url)) throw new ContentError(`${page.file}: the link "${l.name}" needs a web address starting with https://.`);
     return `      <li><a href="${esc(l.url)}" target="_blank" rel="noopener"><span class="icon">${icon(ctx, page, l.icon)}</span><span><span class="name">${esc(l.name)}</span><span class="handle">${esc(l.handle)}</span></span>${ARROW}</a></li>`;
@@ -194,13 +213,11 @@ async function homePage(ctx, page) {
 
   return `${await head(ctx, page, { path: "index.html", css: "home", extra: script })}
 <body class="character-seal">
+${sky()}
 <div class="wrap">
   <header class="hero">
     <div class="stage">
-      <picture>
-        <source media="(max-width: 760px)" srcset="${phone}"${ctx.dims(phone)}>
-        <img class="figure" src="${character}"${ctx.dims(character)} fetchpriority="high" alt="${esc(text(page, "character_image_alt"))}">
-      </picture>
+      <img class="figure" src="${character}"${ctx.dims(character)} fetchpriority="high" alt="${esc(text(page, "character_image_alt"))}">
     </div>
     <div class="intro">
       <div class="seal"><img src="${ctx.emblem}" alt=""${ctx.dims(ctx.emblem)} fetchpriority="high"><p class="eyebrow" id="live">${esc(text(ctx.site, "live_badge_default"))}</p></div>
